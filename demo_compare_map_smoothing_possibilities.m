@@ -1,0 +1,86 @@
+close all
+clc
+
+% Load a placemap before running this script
+
+m0 = mltetrodeplacemap;
+
+m0 = MLSpikePlacemap(m0.x, m0.y, m0.ts_ms, m0.spike_ts_ms, ...
+                'speed_cm_per_second', m0.p.Results.speed_cm_per_second, ...
+                'boundsx', m0.p.Results.boundsx, ...
+                'boundsy', m0.p.Results.boundsy, ...
+                'nbinsx', m0.p.Results.nbinsx, ...
+                'nbinsy', m0.p.Results.nbinsy, ...
+                'SmoothingProtocol', 'SmoothBeforeDivision', ...
+                'smoothingKernel', m0.p.Results.smoothingKernel, ...
+                'criteriaDwellTimeSecondsPerBinMinimum', m0.p.Results.criteriaDwellTimeSecondsPerBinMinimum, ...
+                'criteriaSpikesPerBinMinimum', m0.p.Results.criteriaSpikesPerBinMinimum, ...
+                'criteriaSpikesPerMapMinimum', m0.p.Results.criteriaSpikesPerMapMinimum, ...
+                'criteria_speed_cm_per_second_minimum', m0.p.Results.criteria_speed_cm_per_second_minimum, ...
+                'criteria_speed_cm_per_second_maximum', m0.p.Results.criteria_speed_cm_per_second_maximum, ...
+                'compute_information_rate_pvalue', false);
+            
+figure
+subplot(2,3,1)
+m0.plot_path_with_spikes()
+subplot(2,3,2)
+m0.plot_path_with_spikes_all()
+subplot(2,3,3)
+m0.plot()
+
+%smoothingProtocol = m0.p.Results.smoothingProtocol;
+smoothingProtocol = 'SmoothAfterDivision';
+
+smoothingKernel = ml_util_compute_rect_kernel(7, 2, 1)
+%smoothingKernel = m0.p.Results.smoothingKernel;
+
+m1 = MLSpikePlacemap(m0.x, m0.y, m0.ts_ms, m0.spike_ts_ms, ...
+                'speed_cm_per_second', m0.p.Results.speed_cm_per_second, ...
+                'boundsx', m0.p.Results.boundsx, ...
+                'boundsy', m0.p.Results.boundsy, ...
+                'nbinsx', m0.p.Results.nbinsx, ...
+                'nbinsy', m0.p.Results.nbinsy, ...
+                'SmoothingProtocol', smoothingProtocol, ...
+                'smoothingKernel', smoothingKernel, ...
+                'criteriaDwellTimeSecondsPerBinMinimum', m0.p.Results.criteriaDwellTimeSecondsPerBinMinimum, ...
+                'criteriaSpikesPerBinMinimum', m0.p.Results.criteriaSpikesPerBinMinimum, ...
+                'criteriaSpikesPerMapMinimum', m0.p.Results.criteriaSpikesPerMapMinimum, ...
+                'criteria_speed_cm_per_second_minimum', m0.p.Results.criteria_speed_cm_per_second_minimum, ...
+                'criteria_speed_cm_per_second_maximum', m0.p.Results.criteria_speed_cm_per_second_maximum, ...
+                'compute_information_rate_pvalue', false);
+            
+subplot(2,3,4)
+m1.plot_path_with_spikes()
+subplot(2,3,5)
+m1.plot_path_with_spikes_all()
+subplot(2,3,6)
+m1.plot()
+
+
+
+plot_map(m0)
+%title('Before Division')
+plot_map(m1)
+%title('After Division')
+
+function plot_map(m)
+figure
+subplot(2,3,1)
+imagesc(m.spikeCountMap)
+
+subplot(2,3,2)
+imagesc(m.dwellTimeMap)
+subplot(2,3,3)
+imagesc(m.meanFiringRateMap)
+
+subplot(2,3,4)
+imagesc(m.spikeCountMapSmoothed)
+subplot(2,3,5)
+imagesc(m.dwellTimeMapSmoothed)
+subplot(2,3,6)
+% pcolor(m.meanFiringRateMapSmoothed)
+% shading interp
+% set(gca, 'ydir', 'reverse')
+% colormap jet
+m.plot()
+end
